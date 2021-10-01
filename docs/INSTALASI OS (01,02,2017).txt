@@ -1,0 +1,213 @@
+01/02/17 RABU
+chapter 9
+
+### Minggu ke 5 ASSESMENT (Hari jumat tanggal 24 2 Jam)(Materi dari tanggal 17 ke belakang)
+
+scheduling (penjadwalan)
+-processor scheduling (penjadwalan processor)
+	> long term
+	> medium term
+	> short term
+
+proses hanya bisa dieksekusi, selama proses berada di main memory
+
+swap
+memindahkan proses-proses yang diblock ke hardisk
+
+# long term scheduling
+yaitu, menjadwalkan proses-proses ke dalam antrian ready (READY) (Siap diEksekusi)
+--------------------------------------------------------------------------------
+# medium term schediling
+menjadwalkan proses-proses itu supaya berada di main memory (Ready blocks)
+--------------------------------------------------------------------------------
+# short term
+menjadwalkan proses untuk di eksekusi (running) (ready -> running)
+
+ada 2 Kategori dari short term
+	> preemtive > proses saat ini yang dapat diinterupsi 
+	> non-preemptive > sebuah penjadwalkan yang tidak memperbolehkan proses yang sedang dieksekusi
+algoritmanya = 	- FCFS(First Come First Serve) / FIFO = proses yang pertama datang, maka proses yang pertama akan dieksekusi
+		- round robin/ bergiliran = pembagian waktu secara merata untuk dieksekusi. membuat satuan waktu yang digunakan secara bersamaan (QUANT TIME)
+		- shortest process next (SPN)/ shortest job first (SJF)
+		- Shortest Remaining Time First (SRTF)
+		- highest response ratio next (HRRN)
+		- Priority
+		- Feedback
+--------------------------------------------------------------------------------
+Algoritma Penjadwalan
+	FCFS 	-penjadwalan proses dilakukan berdasarkan urutan kedatangan.
+		-kategori non-preemptive
+jawab:-
+TurnAround Time
+waktu yang dibutuhkan dari sebuah proses dari awal kedatangan sampai selesai di eksekusi.
+waiting time
+waktu tunggu proses sebelum di eksekusi.
+____________________________________________________________________________________________
+Round robin = bergiliran
+-penjadwalan proses dilakukan dengan menetapkan satuan waktu eksekusi(quanta) yang akan diberikan kepada setiap proses secara bergiliran.
+-kategori preemptive.
+jawab:-_____________________________________________________________________________
+       | A | B | A | B | C | B | D | C | B | E | D | C | B | E | D | C | B | D | D |
+       |___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|
+       0   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20
+
+__|AT|ST|FT|TAT|WT|
+__________________|
+A | 0| 3| 4| 4| 1 |
+B | 2| 6|18|16|10 |
+C | 4| 4|17|13| 9 |
+D | 6| 5|20|14| 9 |
+E | 8| 2|15| 7| 5 |
+__________________|
+	   |50/5|6.8|
+           |10.8|
+---------------------------------------------------------------------
+
+SPN= Shortest process next /SJF
+-penjadwalan dilakukan dengan melihat waktu layanan terpendek
+-kategori non preemtive
+
+jawab= 
+
+---------------------------------------------------------------
+SRTF= Shortest Remaining Time First (SRTF)
+- Rasio yang paling tinggi, berarti proses itu yang dilakukan.
+- kategori non preemtive
+jawab=
+
+
+_____________________________________________________________________________________________
+17/02/2017
+----------
+Chapter 5 : Concurancy 
+
+Concurancy
+//suatu kondisi dimana banyak proses yang mau dik
+banyak proses pada satu waktu yang bersamaan
+
+multi program (banyaknya proses) : single process
+
+multi processor
+penanganan banyak proses dalam multi processor
+
+Distributed processing
+
+
+race condition
+kondisi dimana banyak proses saling bersaing untuk mendapatkan sumber daya.
+
+3 masalah pengendalian proses
+-mutual exclusion(berhubungan dengan Critical Section): 
+jaminan harus satu proses yg mendapatkan sumber daya bersama (hanya 1 prose yg dieksekusi)
+menjamin hanya 1 proses yang dapat dieksekusi dalam 1 waktu. 
+
+-Deadlock: 
+suatu kondisi dimana ada 2 kondisi atau lebih proses yang tidak dapat dieksekusi karena saling menunggu sumber daya.
+contoh : ada 2 buah proses : P1 dan P2. keduanya membutuhkan R1 dan R2. misalkan P1 mendapatkan R1. dan P2 Mendapatkan R2. (semua proses Hang)
+
+-starvation (kekurangan sumber daya) : 
+situasi dimana sebuah proses yang sebenarnya dia siap dieksekusi, tetapi tidak dieksekusi2 
+karena tidak mendapatkan jatah akses sumber daya. maka proses tersebut mengalami starvation (Hang pada 1 buah program)
+contoh : P1, P2, P3 membutuhkan R. R diberikan kepada P1. maka P1 dieksekusi. setelah P1 selesai. kemudian R diberikan kepada P2. setelah P2 selesai eksekusi,
+R ini tidak diberikan kepada P1.
+_____________________________________________________________________________________________
+Critical Section = sumber daya kritis
+sebuah sumber daya bersama yang hanya boleh diakses oleh 1 proses dalam 1 waktu
+contoh : Printer(Sumber daya kritis)
+
+interleaving
+eksekusi proses secara bergiliran => ada pada sebuah sistem multiprogramming
+
+overlapping
+eksekusi beberapa proses dalam waktu bersamaan => ada pada sebuah sistem multiprocessor
+
+void echo ()    //Bahasa C
+{
+     chin=getchar();    //chin = karakter input
+     chout=chin;        
+     putchar(chout);
+}
+
+
+______________________________________________________________________________________________
+
+22/02/17
+--------
+KERNEL and System Call
+
+Sistem operasi
+pengatur sumber daya hardware
+
+
+Hardware -> Kernel -> System Calls -> Library Function
+
+Kernel
+inti dari sebuah sistem, lokasinya berada di Main Memory(data yg berada di main Memory adalah KERNEL)
+Fungsinya
+- mengendalikan dan memediasi Hardware (dialah(kernel) yg berhubungan langsung dengan hardware)
+- mengelola dan mengendalikan apa saja, seperti mengelola memory, cpu, disk, description, etc
+- enforces security and protection
+- kernel akan menerima informasi dari System Calls/ user bisa bekomunikasi dengan kernel melalui System Calls
+- 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Interleaving
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                                                                                          

@@ -1,0 +1,292 @@
+window.__ATA = {
+        scriptSrc: '//s.pubmine.com/showad.js',
+        slotPrefix: 'automattic-id-',
+        passbackReceiver: 'automattic-passback-receiver',
+        passbackSrc: '//s.pubmine.com/passback.html',
+        customParams: _ipw_custom,
+        providerData: [],
+        initAd: function(o){
+                var o=o||{},g=window,d=g.document,wr=d.write,id=g.__ATA.id();wr.call(d,
+                '<div id="'+id+'" data-section="'+(o.sectionId||0)+'"'+(o.type?('data-type="'+o.type+'"'):'')+' '+(o.forcedUrl?('data-forcedurl="'+o.forcedUrl+'"'):'')+' style="width:'+(o.width||0)+'px; height:'+(o.height||0)+'px;">');g.__ATA.displayAd(id, o.customParams);wr.call(d,'</div>');
+        },
+        displayAd: function(id){window.__ATA.ids=window.__ATA.ids||{};window.__ATA.ids[id]=1;},
+        registerAdapterResult: function(id, result, time){if ("undefined" != typeof result && null !== result) {window.__ATA.providerData.push({'provider': id, 'response': result, 'responsetime': time || ''})}},
+        id: function(){return window.__ATA.slotPrefix+(parseInt(Math.random()*10000,10)+1+(new Date()).getMilliseconds());}
+};
+
+//headerbidding
+(function(showadName){
+    if (!window[showadName]) return;
+
+    function sendLog(logs, err) {
+        var res = ['version=2'];
+        for (var k in logs) {
+            if (logs.hasOwnProperty(k)) {
+                res.push(k + '=' + encodeURIComponent(logs[k]));
+            }
+        }
+        if (err) {
+            res.push('message=' + encodeURIComponent(err.message || err.toString()));
+            err.stack && res.push('stack=' + encodeURIComponent(err.stack));
+        }
+        (new Image()).src = 'http://dev.automattic.iponweb.net/params_logger?' + res.join('&');
+    }
+
+    function loadScript(src, cb, cond) {
+        if (!cond) {
+            var s = window.document.createElement('script');
+            var isReady = false;
+            function onReady(e){
+                if (isReady) return;
+                isReady = true;
+                e = e || window.event;
+                if (s.removeEventListener) {
+                    s.removeEventListener('load', onReady, false);
+                    s.removeEventListener('error', onReady, false);
+                } else if (s.detachEvent) {
+                    s.detachEvent('onload', onReady);
+                    s.detachEvent('onerror', onReady);
+                } else {
+                    s.onload = s.onerror = null;
+                }
+
+                s.parentNode && s.parentNode.removeChild(s);
+                if (cb) {
+                    setTimeout(function(){ cb(e && e.type === 'load'); }, 10);
+                }
+            }
+            if (s.addEventListener) {
+                s.addEventListener('load', onReady, false);
+                s.addEventListener('error', onReady, false);
+            } else if (s.attachEvent) {
+                s.attachEvent('onload', onReady);
+                s.attachEvent('onerror', onReady);
+            } else {
+                s.onload = s.onerror = onReady;
+            }
+            s.async = true;
+            s.type = 'text/javascript';
+            s.src = src;
+
+            var firstScriptNode = window.document.getElementsByTagName('script')[0];
+            setTimeout(function() {
+                if (firstScriptNode) {
+                    firstScriptNode.parentNode.insertBefore(s, firstScriptNode);
+                } else {
+                    window.document.body.appendChild(s);
+                }
+            }, 0);
+
+            return function(ignoreCb){
+                if (isReady) return;
+                if (ignoreCb) {
+                    cb = false;
+                }
+                onReady(false);
+            };
+        }
+        cb && cb(true)
+    }
+
+    var providerKeys = ['A9'];
+    var providers = [
+        function(done){
+            loadScript('//c.amazon-adsystem.com/aax2/amzn_ads.js', function(success){
+                try {
+                    success && window.amznads? amznads.getAdsCallback("3033", function(){
+                        done('A9', amznads.getKeys());
+                    }) : done();
+                } catch (err) {
+                    sendLog({text:'provider A9'}, err);
+                }
+            });
+        }
+    ];
+
+    try {
+        var promise = Promise;
+        new promise(function(dn){ dn(); });
+        promise.all([new promise(function(dn){ dn(); })]);
+    } catch(err) {
+        promise = function(fn) {
+            this.PromiseState = 'pending';
+            this.PromiseFulfillReactions = [];
+            this.PromiseRejectReactions = [];
+            this._full_prms = [];
+            this._rej_prms = [];
+            var p = this;
+            function next(res) {
+                try {
+                    var i, l;
+                    if (res instanceof promise) {
+                        if (res.PromiseState === 'pending') {
+                            for (i= 0,l=p.PromiseFulfillReactions.length;i<l;i++) {
+                                res._full_prms.push(p._full_prms[i]);
+                                res.PromiseFulfillReactions.push(p.PromiseFulfillReactions[i]);
+                            }
+                            for (i= 0,l=p.PromiseRejectReactions.length;i<l;i++) {
+                                res._rej_prms.push(p._rej_prms[i]);
+                                res.PromiseRejectReactions.push(p.PromiseRejectReactions[i]);
+                            }
+                            return;
+                        } else {
+                            res = res.PromiseResult;
+                        }
+                    }
+                    for (i= 0,l=p.PromiseFulfillReactions.length;i<l;i++) {
+                        p._full_prms[i]._run(p.PromiseFulfillReactions[i], res);
+                    }
+                } catch(err){
+                    sendLog({text: 'promise next'}, err);
+                }
+            }
+            function rej(err) {
+                try {
+                    for (i= 0,l=p.PromiseRejectReactions.length;i<l;i++) {
+                        p._rej_prms[i]._run(p.PromiseRejectReactions[i], err);
+                    }
+                } catch(err) {
+                    sendLog({text: 'promise rej'}, err);
+                }
+            }
+            if (fn) {
+                fn(function(res){
+                    if (p.PromiseState !== 'pending') return;
+                    p.PromiseState = 'resolved';
+                    p.PromiseResult = res;
+                    next(res);
+                }, function(err){
+                    if (p.PromiseState !== 'pending') return;
+                    p.PromiseState = 'rejected';
+                    p.PromiseResult = err;
+                    rej(err)
+                });
+            } else {
+                this._run = function(fn, res){
+                    if (p.PromiseState !== 'pending') return;
+                    try {
+                        p.PromiseState = 'resolved';
+                        p.PromiseResult = fn(res);
+                        next(p.PromiseResult);
+                    } catch(err) {
+                        p.PromiseState = 'rejected';
+                        p.PromiseResult = err;
+                        rej(err);
+                    }
+                };
+            }
+        };
+        promise.prototype = {
+            then: function(fn,rej){
+                var p = (fn || rej) && new promise();
+                if (fn) {
+                    this._full_prms.push(p);
+                    this.PromiseFulfillReactions.push(fn);
+                }
+                if (rej) {
+                    this._rej_prms.push(p);
+                    this.PromiseRejectReactions.push(rej);
+                }
+                if (this.PromiseState === 'resolved') {
+                    fn && p._run(fn, this.PromiseResult);
+                } else if (this.PromiseState === 'rejected') {
+                    rej && p._run(rej, this.PromiseResult);
+                }
+                return p;
+            }
+        };
+        promise.all = function(list){
+            return new promise(function(done, fall){
+                var num = 0, fullRes = [];
+                function check(res){
+                    fullRes.push(res);
+                    num --;
+                    if (!num) {
+                        done(fullRes);
+                    }
+                }
+                for (var i=0,l=list.length; i<l; i++) {
+                    if (list[i] instanceof promise) {
+                        num ++;
+                        list[i].then(check,fall);
+                    }
+                }
+            });
+        };
+        promise.resolve = function(val){
+            var p = new promise();
+            delete p._run;
+            p.PromiseState = 'resolved';
+            p.PromiseResult = val;
+            return p;
+        };
+        promise.reject = function(err){
+            var p = new promise();
+            delete p._run;
+            p.PromiseState = 'rejected';
+            p.PromiseResult = err;
+            return p;
+        }
+    }
+
+    try {
+        var list = [];
+        for (var i = 0, l = providers.length; i < l; i++) {
+            list.push(new promise((function (pInit, num) {
+                return function (done) {
+                    try {
+                        var doneReady;
+                        var timer = setTimeout(function(){if (!doneReady) {
+                            sendLog({text:'timeout '+ providerKeys[num]});
+                            window[showadName].registerAdapterResult(providerKeys[num], 'timeout', new Date - now);
+                            doneReady = true;
+                            done();
+                        }}, 3000);
+                        var now = +new Date();
+                        pInit(function (name, res) {
+                            try {
+                                clearTimeout(timer);
+                                name && window[showadName].registerAdapterResult(name, res, new Date - now);
+                                if (!doneReady) {
+                                    doneReady = true;
+                                    done();
+                                }
+
+                            } catch(err){
+                                sendLog({text:'registerAdapter '+ providerKeys[num]}, err);
+                                clearTimeout(timer);
+                                if (!doneReady) {
+                                    doneReady = true;
+                                    done();
+                                }
+                            }
+                        });
+                    } catch(err){
+                        sendLog({text:'done '+ providerKeys[num]}, err);
+                        clearTimeout(timer);
+                        if (!doneReady) {
+                            doneReady = true;
+                            done();
+                        }
+                    }
+                };
+            })(providers[i], i)));
+        }
+
+        window[showadName].waitForMe = promise.all(list).then(function () {
+            delete window[showadName].waitForMe;
+        });
+    } catch (err) {
+        if (typeof sendLog === 'function') sendLog({text:'main'}, err);
+    }
+
+})('__ATA');
+
+// including ad delivery script
+(function(g,d,ata,sync){
+        var pr="https:"===d.location.protocol?"https:":"http:",src=pr+ata.scriptSrc,st="text/javascript";
+        (sync===true)?d.write('<scr'+'ipt type="'+st+'" src="'+src+'"><\/scr'+'ipt>'):inj(src,st);
+        function inj(url,st) {
+                var s=d.createElement("script"),n=d.getElementsByTagName("script")[0],p=n.parentNode,ib=p.insertBefore;
+                s.type=st;s.src=url;s.async=true;(navigator.userAgent.indexOf("Opera")!==-1)?setTimeout(function(){ib.call(p,s,n);},0):ib.call(p,s,n);
+        }})(window, window.document, window.__ATA, window.__ATA.isSync);

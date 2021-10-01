@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<!-- saved from url=(0113)https://sisopkitakita.wordpress.com/2014/09/26/contoh-monitor-dan-implementasi-mutual-exclusion-dengan-semaphore/ -->
+<html lang="id-ID"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script type="text/javascript" async="" src="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/bid"></script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Monitor : Mutual Exclusion dengan Semaphore | Materi Sistem Operasi</title>
+<link rel="profile" href="http://gmpg.org/xfn/11">
+<link rel="pingback" href="https://sisopkitakita.wordpress.com/xmlrpc.php">
+
+<link rel="dns-prefetch" href="https://s2.wp.com/">
+<link rel="dns-prefetch" href="https://s1.wp.com/">
+<link rel="dns-prefetch" href="https://s0.wp.com/">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com/">
+<link rel="alternate" type="application/rss+xml" title="Materi Sistem Operasi » Feed" href="https://sisopkitakita.wordpress.com/feed/">
+<link rel="alternate" type="application/rss+xml" title="Materi Sistem Operasi » Umpan Komentar" href="https://sisopkitakita.wordpress.com/comments/feed/">
+<link rel="alternate" type="application/rss+xml" title="Materi Sistem Operasi » Monitor : Mutual Exclusion dengan Semaphore Umpan Komentar" href="https://sisopkitakita.wordpress.com/2014/09/26/contoh-monitor-dan-implementasi-mutual-exclusion-dengan-semaphore/feed/">
+	<script defer="" src="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/beacon.js.download"></script><script type="text/javascript" src="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/showad.js.download" async=""></script><script type="text/javascript">
+		/* <![CDATA[ */
+		function addLoadEvent(func) {
+			var oldonload = window.onload;
+			if (typeof window.onload != 'function') {
+				window.onload = func;
+			} else {
+				window.onload = function () {
+					oldonload();
+					func();
+				}
+			}
+		}
+		/* ]]> */
+	</script>
+			<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/72x72\/","ext":".png","svgUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/s0.wp.com\/wp-includes\/js\/wp-emoji-release.min.js?m=1488818651h&ver=4.7.3"}};
+			!function(a,b,c){function d(a){var b,c,d,e,f=String.fromCharCode;if(!k||!k.fillText)return!1;switch(k.clearRect(0,0,j.width,j.height),k.textBaseline="top",k.font="600 32px Arial",a){case"flag":return k.fillText(f(55356,56826,55356,56819),0,0),!(j.toDataURL().length<3e3)&&(k.clearRect(0,0,j.width,j.height),k.fillText(f(55356,57331,65039,8205,55356,57096),0,0),b=j.toDataURL(),k.clearRect(0,0,j.width,j.height),k.fillText(f(55356,57331,55356,57096),0,0),c=j.toDataURL(),b!==c);case"emoji4":return k.fillText(f(55357,56425,55356,57341,8205,55357,56507),0,0),d=j.toDataURL(),k.clearRect(0,0,j.width,j.height),k.fillText(f(55357,56425,55356,57341,55357,56507),0,0),e=j.toDataURL(),d!==e}return!1}function e(a){var c=b.createElement("script");c.src=a,c.defer=c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var f,g,h,i,j=b.createElement("canvas"),k=j.getContext&&j.getContext("2d");for(i=Array("flag","emoji4"),c.supports={everything:!0,everythingExceptFlag:!0},h=0;h<i.length;h++)c.supports[i[h]]=d(i[h]),c.supports.everything=c.supports.everything&&c.supports[i[h]],"flag"!==i[h]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[i[h]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(g=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",g,!1),a.addEventListener("load",g,!1)):(a.attachEvent("onload",g),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),f=c.source||{},f.concatemoji?e(f.concatemoji):f.wpemoji&&f.twemoji&&(e(f.twemoji),e(f.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script><script src="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/wp-emoji-release.min.js.download" type="text/javascript" defer=""></script>
+		<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<link rel="stylesheet" id="all-css-0-1" href="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/saved_resource" type="text/css" media="all">
+<link rel="stylesheet" id="hexa-source-sans-pro-css" href="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/css" type="text/css" media="all">
+<link rel="stylesheet" id="all-css-2-1" href="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/saved_resource(1)" type="text/css" media="all">
+<link rel="stylesheet" id="print-css-3-1" href="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/global-print.css" type="text/css" media="print">
+<link rel="stylesheet" id="all-css-4-1" href="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/saved_resource(2)" type="text/css" media="all">
+<script type="text/javascript" src="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/saved_resource(3)"></script>
+<link rel="stylesheet" id="all-css-0-2" href="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/style.css" type="text/css" media="all">
+<!--[if lt IE 8]>
+<link rel='stylesheet' id='highlander-comments-ie7-css'  href='https://s1.wp.com/wp-content/mu-plugins/highlander-comments/style-ie7.css?m=1351637563h&#038;ver=20110606' type='text/css' media='all' />
+<![endif]-->
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://sisopkitakita.wordpress.com/xmlrpc.php?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://s1.wp.com/wp-includes/wlwmanifest.xml"> 
+<link rel="prev" title="Message Passing" href="https://sisopkitakita.wordpress.com/2014/09/26/message-passing/">
+<link rel="next" title="All about Monitor" href="https://sisopkitakita.wordpress.com/2014/09/26/all-about-monitor/">
+<meta name="generator" content="WordPress.com">
+<link rel="canonical" href="https://sisopkitakita.wordpress.com/2014/09/26/contoh-monitor-dan-implementasi-mutual-exclusion-dengan-semaphore/">
+<link rel="shortlink" href="http://wp.me/p50gaZ-X">
+<link rel="alternate" type="application/json+oembed" href="https://public-api.wordpress.com/oembed/1.0/?format=json&amp;url=https%3A%2F%2Fsisopkitakita.wordpress.com%2F2014%2F09%2F26%2Fcontoh-monitor-dan-implementasi-mutual-exclusion-dengan-semaphore%2F&amp;for=wpcom-auto-discovery"><link rel="alternate" type="application/xml+oembed" href="https://public-api.wordpress.com/oembed/1.0/?format=xml&amp;url=https%3A%2F%2Fsisopkitakita.wordpress.com%2F2014%2F09%2F26%2Fcontoh-monitor-dan-implementasi-mutual-exclusion-dengan-semaphore%2F&amp;for=wpcom-auto-discovery">
+<!-- Jetpack Open Graph Tags -->
+<meta property="og:type" content="article">
+<meta property="og:title" content="Monitor : Mutual Exclusion dengan Semaphore">
+<meta property="og:url" content="https://sisopkitakita.wordpress.com/2014/09/26/contoh-monitor-dan-implementasi-mutual-exclusion-dengan-semaphore/">
+<meta property="og:description" content="Monitor dibagi kedalam tiga jenis, berikut adalah contoh-contoh monitor yaitu : A. Monitor dengan Signal (Monitor Hoare) Monitor ini mempunyai prosedur didalam modul monitor dimana hanya dapat diak…">
+<meta property="article:published_time" content="2014-09-25T19:11:42+00:00">
+<meta property="article:modified_time" content="2014-09-25T19:20:31+00:00">
+<meta property="og:site_name" content="Materi Sistem Operasi">
+<meta property="og:image" content="https://s0.wp.com/i/blank.jpg">
+<meta property="og:locale" content="id_ID">
+<meta name="twitter:site" content="@wordpressdotcom">
+<meta name="twitter:card" content="summary">
+<meta property="fb:app_id" content="249643311490">
+<meta property="article:publisher" content="https://www.facebook.com/WordPresscom">
+<link rel="shortcut icon" type="image/x-icon" href="https://s2.wp.com/i/favicon.ico" sizes="16x16 24x24 32x32 48x48">
+<link rel="icon" type="image/x-icon" href="https://s2.wp.com/i/favicon.ico" sizes="16x16 24x24 32x32 48x48">
+<link rel="apple-touch-icon-precomposed" href="https://s0.wp.com/i/webclip.png">
+<link rel="openid.server" href="https://sisopkitakita.wordpress.com/?openidserver=1">
+<link rel="openid.delegate" href="https://sisopkitakita.wordpress.com/">
+<link rel="search" type="application/opensearchdescription+xml" href="https://sisopkitakita.wordpress.com/osd.xml" title="Materi Sistem Operasi">
+<link rel="search" type="application/opensearchdescription+xml" href="https://s1.wp.com/opensearch.xml" title="WordPress.com">
+		<style type="text/css">
+			.recentcomments a {
+				display: inline !important;
+				padding: 0 !important;
+				margin: 0 !important;
+			}
+
+			table.recentcommentsavatartop img.avatar, table.recentcommentsavatarend img.avatar {
+				border: 0px;
+				margin: 0;
+			}
+
+			table.recentcommentsavatartop a, table.recentcommentsavatarend a {
+				border: 0px !important;
+				background-color: transparent !important;
+			}
+
+			td.recentcommentsavatarend, td.recentcommentsavatartop {
+				padding: 0px 0px 1px 0px;
+				margin: 0px;
+			}
+
+			td.recentcommentstextend {
+				border: none !important;
+				padding: 0px 0px 2px 10px;
+			}
+
+			.rtl td.recentcommentstextend {
+				padding: 0px 10px 2px 0px;
+			}
+
+			td.recentcommentstexttop {
+				border: none;
+				padding: 0px 0px 0px 10px;
+			}
+
+			.rtl td.recentcommentstexttop {
+				padding: 0px 10px 0px 0px;
+			}
+		</style>
+		<meta name="application-name" content="Materi Sistem Operasi"><meta name="msapplication-window" content="width=device-width;height=device-height"><meta name="msapplication-tooltip" content="blog ini berisikan materi Sistem Operasi"><meta name="msapplication-task" content="name=Berlangganan;action-uri=https://sisopkitakita.wordpress.com/feed/;icon-uri=https://s2.wp.com/i/favicon.ico"><meta name="msapplication-task" content="name=Mendaftar untuk blog gratis;action-uri=http://wordpress.com/signup/;icon-uri=https://s2.wp.com/i/favicon.ico"><meta name="msapplication-task" content="name=Dukungan WordPress.com;action-uri=http://support.wordpress.com/;icon-uri=https://s2.wp.com/i/favicon.ico"><meta name="msapplication-task" content="name=Forum WordPress.com;action-uri=http://forums.wordpress.com/;icon-uri=https://s2.wp.com/i/favicon.ico"><meta name="title" content="Monitor : Mutual Exclusion dengan Semaphore | Materi Sistem Operasi on WordPress.com">
+<meta name="description" content="Monitor dibagi kedalam tiga jenis, berikut adalah contoh-contoh monitor yaitu : A. Monitor dengan Signal (Monitor Hoare) Monitor ini mempunyai prosedur didalam modul monitor dimana hanya dapat diakses oleh prosedur lokal, jika suatu proses masuk kedalam monitor yaitu dengan cara meminta salah satu prosedur yang terdapat pada monitor. Suatu saat hanya terdapat satu proses yang…">
+			<style type="text/css" id="hexa-custom-background-css">
+							body.custom-background,
+				.custom-background .wp-caption {
+					background-color: #e9e7e3				}
+				.custom-background img.alignleft,
+				.wp-caption.alignleft,
+				img.alignright,
+				.wp-caption.alignright,
+				.author-archives-img,
+				.comment-author .avatar-wrapper {
+					border-top-color: #e9e7e3;
+					border-bottom-color: #e9e7e3;
+				}
+								</style>
+			<script type="text/javascript" src="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/amzn_ads.js.download"></script>
+		<script type="text/javascript">
+		 try { amznads.getAds("3033"); } catch(e) {}
+		</script><script type="text/javascript" src="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/bid(1)"></script>
+ 		<script type="text/javascript">
+		try {
+		var a9_p = amznads.getKeys(),
+			_ipw_custom = {
+				wordAds: '0',
+				adSafe: '0',
+				domain: 'sisopkitakita.wordpress.com',
+				pageURL: 'https://sisopkitakita.wordpress.com/2014/09/26/contoh-monitor-dan-implementasi-mutual-exclusion-dengan-semaphore/'
+			};
+			if("undefined"!=typeof a9_p&&""!=a9_p&&null!==a9_p&&"[object Array]"===Object.prototype.toString.call(a9_p)){var a="",b=0,c=a9_p.length;a9_p.sort();for(var d=0;d<c;d++){a9_p[d-b]=a9_p[d-b].replace(/a1x6p/,"a160x600p");var e=a9_p[d-b].split("p");e[0]==a&&(a9_p.splice(d-b,1),b++);a=e[0]}_ipw_custom.amznPay=a9_p};document.close();
+ 	        } catch(e) {}
+		</script>
+		<script type="text/javascript" src="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/publishertag.js.download"></script>
+ 		<script type="text/javascript" src="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/head.js.download"></script><link rel="amphtml" href="https://sisopkitakita.wordpress.com/2014/09/26/contoh-monitor-dan-implementasi-mutual-exclusion-dengan-semaphore/amp/"><style type="text/css" id="syntaxhighlighteranchor"></style>
+<script type="text/javascript">
+	window.google_analytics_uacct = "UA-52447-2";
+</script>
+
+<script type="text/javascript">
+	var _gaq = _gaq || [];
+	_gaq.push(['_setAccount', 'UA-52447-2']);
+	_gaq.push(['_setDomainName', 'wordpress.com']);
+	_gaq.push(['_initData']);
+	_gaq.push(['_trackPageview']);
+
+	(function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ga);
+	})();
+</script><script type="text/javascript" async="" src="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/ga.js.download"></script>
+<script type="text/javascript" async="" src="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/saved_resource(4)"></script><link rel="stylesheet" type="text/css" id="gravatar-card-css" href="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/hovercard.css"><link rel="stylesheet" type="text/css" id="gravatar-card-services-css" href="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/services.css"><script type="text/javascript" async="" src="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/saved_resource(5)"></script></head>
+
+<body class="post-template-default single single-post postid-59 single-format-standard mp6 customizer-styles-applied highlander-enabled highlander-light">
+<div id="page" class="hfeed site">
+			<div id="menu-toggle-nav" class="panel">
+		<nav id="site-navigation" class="main-navigation" role="navigation">
+			<a class="skip-link screen-reader-text" href="https://sisopkitakita.wordpress.com/2014/09/26/contoh-monitor-dan-implementasi-mutual-exclusion-dengan-semaphore/#content">Skip to content</a>
+
+			<div class="menu-mainmenu-container"><ul id="menu-mainmenu" class="menu"><li id="menu-item-20" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-20"><a href="https://sisopkitakita.wordpress.com/">HOME</a></li>
+<li id="menu-item-24" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-24"><a href="https://sisopkitakita.wordpress.com/category/tugas-1/">Tugas 1</a></li>
+<li id="menu-item-51" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-51"><a href="https://sisopkitakita.wordpress.com/category/tugas-2/">Tugas 2</a></li>
+<li id="menu-item-71" class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-71"><a href="https://sisopkitakita.wordpress.com/category/tugas-3/">Tugas 3</a></li>
+<li id="menu-item-99" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-99"><a href="https://sisopkitakita.wordpress.com/category/tugas-4/">Tugas 4</a></li>
+</ul></div>		</nav><!-- #site-navigation -->
+	</div>
+			<div id="search-toggle-nav" class="panel">
+		<div class="search-wrapper">
+			<form role="search" method="get" class="search-form" action="https://sisopkitakita.wordpress.com/">
+	<label>
+		<span class="screen-reader-text">Cari untuk:</span>
+		<input type="search" class="search-field" placeholder="Cari …" value="" name="s">
+	</label>
+	<input type="submit" class="search-submit" value="Cari">
+</form>
+		</div>
+	</div>
+	<header id="masthead" class="site-header" role="banner">
+		<div class="site-header-wrapper">
+			<div class="site-branding">
+				<h1 class="site-title"><a href="https://sisopkitakita.wordpress.com/" rel="home">Materi Sistem Operasi</a></h1>
+				<h2 class="site-description">blog ini berisikan materi Sistem Operasi</h2>
+			</div>
+			<div class="toggles">
+			<div id="menu-toggle" class="toggle" title="Menu">
+				<span class="screen-reader-text">Menu</span>
+			</div><!-- #menu-toggle -->
+									<div id="search-toggle" class="toggle" title="Cari">
+				<span class="screen-reader-text">Cari</span>
+			</div><!-- #search-toggle -->
+		</div><!-- .toggles -->
+		</div>
+	</header><!-- #masthead -->
+	<div id="content" class="site-content">
+
+	<div id="primary" class="content-area">
+		<main id="main" class="site-main" role="main">
+
+		
+			
+<article id="post-59" class="post-59 post type-post status-publish format-standard hentry category-tugas-3">
+	<header class="entry-header">
+					<span class="entry-format"></span>
+				<h1 class="entry-title">Monitor : Mutual Exclusion dengan&nbsp;Semaphore</h1>	</header><!-- .entry-header -->
+
+	<div class="entry-content">
+		<p style="text-align:justify;"><strong>Monitor dibagi kedalam tiga jenis</strong>, berikut adalah contoh-contoh monitor yaitu :</p>
+<p style="text-align:justify;"><em>A. Monitor dengan Signal (Monitor Hoare)</em></p>
+<p style="text-align:justify;">Monitor ini mempunyai prosedur didalam modul monitor dimana hanya dapat diakses oleh prosedur lokal, jika suatu proses masuk kedalam monitor yaitu dengan cara meminta salah satu prosedur yang terdapat pada monitor. Suatu saat hanya terdapat satu proses yang dapat dieksekusi dalam monitor(proses lainnya menunggu giliran dan tidak membutuhkan semaphore). Jika terdapat data variabel global maka akan dapat dilindungi bila ditempatkan didalam monitor.</p>
+<p style="text-align:justify;"><em>B. Monitor dengan Notify (Monitor Lampson-Redell)</em></p>
+<p style="text-align:justify;">Adapun tujuan dari Monitor dengan Notify adalah untuk mengatasi kelemahan yang terdapat di monitor. Pada cnotify berfungsi untuk memberitahu kondisi dari proses di dalam antrian (misal : not empty, not full, dll). Proses dalam antrian tersebut tidak harus segera dieksekusi, namun menunggu hingga monitor dalam kondisi tidak sibuk, maka diperlukan pengecekan status monitor (looping).</p>
+<p style="text-align:justify;"><em>C. Monitor dengan Broadcast (Monitor Lampson-Redell)</em></p>
+<p style="text-align:justify;">Monitor dengan Broadcast merupakan pengembangan daripada monitor sebelumnya yaitu Monitor dengan Notify. Cbroadcast digunakan pada kondisi dimana jumlah proses yang harus diaktifkan tidak diketahui secara pasti, cbroadcast(x) akan membuat seluruh proses didalam antrian akan diubah statusnya menjadi ready ketika menunggu eksekusi kondisi x.</p>
+<p style="text-align:justify;"><strong>Implementasi dari Mutual Exclusion dengan Semaphore</strong></p>
+<p style="text-align:justify;"><em>1. Pemanfaatan semaphore primitif dalam mutex</em></p>
+<p style="text-align:justify;">Contoh dari Pemanfaatan semaphore primitif dalam mutex yaitu misal terdapat dua buah thread yang sedang berjalan bersamaan :</p>
+<p style="text-align:justify;">thread A :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; thread B :</p>
+<p style="text-align:justify;">count = count +1;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; count = count + 1;</p>
+<p style="text-align:justify;">karena thread A dan thread B mengakses variabel yang sama (count) sehingga thread A dan thread B diharuskan berjalan satu-satu dengan cara menggunakan semaphore mutex yang berupa binary semaphore dengan nilai awal 1.</p>
+<p style="text-align:justify;">thread A :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; thread B :</p>
+<p style="text-align:justify;">kunci(mutex);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; kunci(mutex);</p>
+<p style="text-align:justify;">count = count + 1;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; count = count + 1;</p>
+<p style="text-align:justify;">buka(mutex);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; buka(mutex);</p>
+<p style="text-align:justify;">thread manapun yang mengeksekusi kunci terlebih dahulu akan jalan terus, sedangkan untuk thread yang tiba belakangan akan menunggu sampai thread yang sudah berjalan terlebih dahulu mengeksekusi ‘buka’, setelah itu kedua thread berjalan lagi dengan normal.</p>
+<p style="text-align:justify;"><em>2. Urutan eksekusi tiga buah proses dengan semaphore</em></p>
+<p style="text-align:justify;">Terdapat tiga buah thread yang berjalan bersamaan. Resource yang tersedia hanya cukup untuk dua buah thread.</p>
+<p style="text-align:justify;">thread A :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; thread B :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; thread C :</p>
+<p style="text-align:justify;">//critical section&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //critical section&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //critical section</p>
+<p style="text-align:justify;">Harus dilakukan pengaturan karena pada suatu saat hanya ada dua buah thread yang berada pada critical sectionnya, dengan menggunakan semaphore multiplex yaitu sebuah counting semaphore dengan nilai awal sama denga jumlah resource yang tersedia, yaitu dua.</p>
+<p style="text-align:justify;">thread A :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; thread B :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; thread C :</p>
+<p style="text-align:justify;">kunci(mutex);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; kunci(mutex);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; kunci(mutex);</p>
+<p style="text-align:justify;">//critical section &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; //critical section &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;//critical section</p>
+<p style="text-align:justify;">buka(mutex);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; buka(mutex);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; buka(mutex);</p>
+<p style="text-align:justify;">jika dua buah thread sedang berada dalam critical section, thread berikutnya yang akan memasuki critical section harus menunggu kedua thread tersebut selesai dieksekusi untuk dapat memasuki critical sectionnya.</p>
+			<style type="text/css">
+			div.wpmrec2x{max-width:610px;}
+			div.wpmrec2x div.u > div{float:left;margin-right:10px;}
+			div.wpmrec2x div.u > div:nth-child(3n){margin-right:0px;}
+			</style>		<div class="wpcnt">
+			<div class="wpa wpmrec wpmrec2x" style="display: inline-block !important;">
+				<span class="wpa-about">Iklan</span>
+				        <div id="crt-377780031" style="width: 300px; height: 250px; display: none !important;"></div>
+        <script type="text/javascript">
+        var o = document.getElementById('crt-377780031');
+        if ("undefined"!=typeof Criteo) {
+            var p = o.parentNode;
+            p.style.setProperty('display', 'inline-block', 'important');
+            o.style.setProperty('display', 'block', 'important');
+            Criteo.DisplayAcceptableAdIfAdblocked({zoneid:388248,containerid:"crt-377780031",collapseContainerIfNotAdblocked:true,"callifnotadblocked": function () {var o = document.getElementById('crt-377780031'); o.style.setProperty('display','none','important');o.style.setProperty('visbility','hidden','important'); }
+        });
+        } else {
+            o.style.setProperty('display', 'none', 'important');
+            o.style.setProperty('visibility', 'hidden', 'important');
+        }
+        </script>
+				<div class="u">
+								<script type="text/javascript">
+				(function(g){if("undefined"!=typeof g.__ATA){g.__ATA.initAd({sectionId:26942, width:300, height:250});
+					g.__ATA.initAd({sectionId:114160, width:300, height:250});}})(window);
+			</script><div id="automattic-id-9202" data-section="26942" style="width:300px; height:250px;"><iframe width="300" height="250" style="border:none;width:300px;height:250px;" frameborder="0" scrolling="no" name="fif_slot_automattic-id-_automattic-id-9202" id="fif_slot_automattic-id-_automattic-id-9202" src="javascript:&quot;&lt;html&gt;&lt;body style=&#39;background:transparent;margin:0%;&#39;&gt;&lt;/body&gt;&lt;/html&gt;&quot;" src="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/saved_resource.html"></iframe></div><div id="automattic-id-4551" data-section="114160" style="width:300px; height:250px;"><iframe width="300" height="250" style="border:none;width:300px;height:250px;" frameborder="0" scrolling="no" name="fif_slot_automattic-id-_automattic-id-4551" id="fif_slot_automattic-id-_automattic-id-4551" src="javascript:&quot;&lt;html&gt;&lt;body style=&#39;background:transparent;margin:0%;&#39;&gt;&lt;/body&gt;&lt;/html&gt;&quot;" src="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/saved_resource(12).html"></iframe></div>
+				</div>
+			</div>
+		</div><div id="jp-post-flair" class="sharedaddy sd-like-enabled sd-sharing-enabled"><div class="sharedaddy sd-sharing-enabled"><div class="robots-nocontent sd-block sd-social sd-social-icon-text sd-sharing"><h3 class="sd-title">Bagikan ini:</h3><div class="sd-content"><ul><li class="share-twitter"><a rel="nofollow" data-shared="sharing-twitter-59" class="share-twitter sd-button share-icon" href="https://sisopkitakita.wordpress.com/2014/09/26/contoh-monitor-dan-implementasi-mutual-exclusion-dengan-semaphore/?share=twitter&amp;nb=1" target="_blank" title="Klik untuk berbagi pada Twitter"><span>Twitter</span></a></li><li class="share-facebook"><a rel="nofollow" data-shared="sharing-facebook-59" class="share-facebook sd-button share-icon" href="https://sisopkitakita.wordpress.com/2014/09/26/contoh-monitor-dan-implementasi-mutual-exclusion-dengan-semaphore/?share=facebook&amp;nb=1" target="_blank" title="Bagikan pada Facebook"><span>Facebook</span></a></li><li class="share-google-plus-1"><a rel="nofollow" data-shared="sharing-google-59" class="share-google-plus-1 sd-button share-icon" href="https://sisopkitakita.wordpress.com/2014/09/26/contoh-monitor-dan-implementasi-mutual-exclusion-dengan-semaphore/?share=google-plus-1&amp;nb=1" target="_blank" title="Klik untuk berbagi via Google+"><span>Google</span></a></li><li class="share-end"></li></ul></div></div></div><div class="sharedaddy sd-block sd-like jetpack-likes-widget-wrapper jetpack-likes-widget-loaded" id="like-post-wrapper-73943865-59-58c128222f2a6" data-src="//widgets.wp.com/likes/#blog_id=73943865&amp;post_id=59&amp;origin=sisopkitakita.wordpress.com&amp;obj_id=73943865-59-58c128222f2a6" data-name="like-post-frame-73943865-59-58c128222f2a6"><h3 class="sd-title">Sukai ini:</h3><div class="likes-widget-placeholder post-likes-widget-placeholder" style="height: 55px; display: none;"><span class="button"><span>Suka</span></span> <span class="loading">Memuat...</span></div><iframe class="post-likes-widget jetpack-likes-widget" name="like-post-frame-73943865-59-58c128222f2a6" height="55px" width="100%" frameborder="0" src="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/saved_resource(13).html"></iframe><span class="sd-text-color"></span><a class="sd-link-color"></a></div>
+<div id="jp-relatedposts" class="jp-relatedposts" style="display: block;">
+	<h3 class="jp-relatedposts-headline"><em>Terkait</em></h3>
+<div class="jp-relatedposts-items jp-relatedposts-items-minimal"><p class="jp-relatedposts-post jp-relatedposts-post0" data-post-id="61" data-post-format="false"><span class="jp-relatedposts-post-title"><a class="jp-relatedposts-post-a" href="https://sisopkitakita.wordpress.com/2014/09/26/all-about-monitor/" title="All about Monitor
+
+Monitor adalah bagian bahasa pemograman yang mempunyai fungsionalitas seperti semaphore tetapi lebih mudah pengontrolannya. Monitor terdiri dari satu prosedur atau lebih, inisalisasi awal, variable kondisi, dan data local. Karakteristik monitor: – Variabel lokal hanya dapat diakses oleh prosedur yang ada di dalam modul monitor – Sebuah proses dapat masuk ke…" rel="nofollow" data-origin="59" data-position="0">All about Monitor</a></span><span class="jp-relatedposts-post-context">dalam "Tugas 3"</span></p><p class="jp-relatedposts-post jp-relatedposts-post1" data-post-id="45" data-post-format="false"><span class="jp-relatedposts-post-title"><a class="jp-relatedposts-post-a" href="https://sisopkitakita.wordpress.com/2014/09/07/deskripsi-proses-kontrol-terhadap-proses/" title="Deskripsi Proses &amp;amp; Kontrol terhadap Proses
+
+Proses adalah kejadian-kejadian yang terjadi secara alami dapat menggunakan waktu, ruang keahlian atau sumber daya lainnya, yang menghasilkan suatu hasil. Proses  terlihat secara nyata dalam waktu yang terbatas. Proses juga bersifat dinamis/aktif karena proses tersebut dalam keadaan tereksekusi. Sistem operasi mengontrol kejadian-kejadian yang ada dalam sistem komputer. Sistem operasi menjadwal…" rel="nofollow" data-origin="59" data-position="1">Deskripsi Proses &amp; Kontrol terhadap Proses</a></span><span class="jp-relatedposts-post-context">dalam "Tugas 2"</span></p><p class="jp-relatedposts-post jp-relatedposts-post2" data-post-id="83" data-post-format="false"><span class="jp-relatedposts-post-title"><a class="jp-relatedposts-post-a" href="https://sisopkitakita.wordpress.com/2014/12/01/disk-performance-parameter-disk-scheduling-policies/" title="Disk Performance Parameter &amp;amp; Disk Scheduling Policies
+
+Disk performance parameter Seek Time Waktu yang dibutuhkan disk arm untuk menempatkan head berada pada silinder yang dituju Rotational Latency Waktu yang dibutuhkan untuk mengakses suatu bagian tertentu. Waktu yang dibutuhkan disk untuk berputar agar sector yang ingin di akses berada di bawah/atas head. Access Time Seek time + Rotational…" rel="nofollow" data-origin="59" data-position="2">Disk Performance Parameter &amp; Disk Scheduling Policies</a></span><span class="jp-relatedposts-post-context">dalam "Tugas 4"</span></p></div></div></div>			</div><!-- .entry-content -->
+
+	<footer class="entry-meta">
+		<span class="post-date"><a href="https://sisopkitakita.wordpress.com/2014/09/26/contoh-monitor-dan-implementasi-mutual-exclusion-dengan-semaphore/" title="2:11 am" rel="bookmark"><time class="entry-date" datetime="2014-09-26T02:11:42+00:00">26 September 2014</time></a></span><span class="byline"><span class="author vcard"><a class="url fn n" href="https://sisopkitakita.wordpress.com/author/afkarshad/" title="Lihat semua pos milik afkarshad" rel="author">afkarshad</a></span></span>					</footer><!-- .entry-meta -->
+</article><!-- #post-## -->
+
+				<nav class="navigation post-navigation" role="navigation">
+		<h1 class="screen-reader-text">Navigasi pos</h1>
+		<div class="nav-links">
+			<div class="nav-previous"><a href="https://sisopkitakita.wordpress.com/2014/09/26/message-passing/" rel="prev"><span class="meta-nav screen-reader-text">←</span></a></div><div class="nav-next"><a href="https://sisopkitakita.wordpress.com/2014/09/26/all-about-monitor/" rel="next"><span class="meta-nav screen-reader-text">→</span></a></div>		</div><!-- .nav-links -->
+	</nav><!-- .navigation -->
+	
+			
+<div id="comments" class="comments-area">
+
+	
+	
+	
+		<div id="respond" class="comment-respond js">
+		<h3 id="reply-title" class="comment-reply-title">Tinggalkan Balasan <small><a rel="nofollow" id="cancel-comment-reply-link" href="https://sisopkitakita.wordpress.com/2014/09/26/contoh-monitor-dan-implementasi-mutual-exclusion-dengan-semaphore/#respond" style="display:none;">Batalkan balasan</a></small></h3>			<form action="https://sisopkitakita.wordpress.com/wp-comments-post.php" method="post" id="commentform" class="comment-form">
+				<input type="hidden" id="highlander_comment_nonce" name="highlander_comment_nonce" value="8a8c5c6334"><input type="hidden" name="_wp_http_referer" value="/2014/09/26/contoh-monitor-dan-implementasi-mutual-exclusion-dengan-semaphore/">
+<input type="hidden" name="hc_post_as" id="hc_post_as" value="guest">
+
+<div class="comment-form-field comment-textarea">
+	
+	<div id="comment-form-comment"><textarea tabindex="-1" style="position: absolute; top: -999px; left: 0px; right: auto; bottom: auto; border: 0px; padding: 0px; box-sizing: content-box; word-wrap: break-word; overflow: hidden; transition: none; height: 0px !important; min-height: 0px !important; font-family: Arial, Helvetica, Tahoma, Verdana, sans-serif; font-size: 14px; font-weight: 400; font-style: normal; letter-spacing: 0px; text-transform: none; text-decoration: none; word-spacing: 0px; text-indent: 0px; line-height: normal; width: 632px;" class="autosizejs "></textarea><textarea id="comment" name="comment" title="Ketikkan komentar di sini..." placeholder="Ketikkan komentar di sini..." style="height: 36px; overflow: hidden; word-wrap: break-word; resize: none;"></textarea></div>
+</div>
+
+<div id="comment-form-identity" style="display: none;">
+
+	<div id="comment-form-nascar">
+		<p>Isikan data di bawah atau klik salah satu ikon untuk log in:</p>
+		<ul>
+			<li class="selected" style="display:none;">
+				<a href="https://sisopkitakita.wordpress.com/2014/09/26/contoh-monitor-dan-implementasi-mutual-exclusion-dengan-semaphore/#comment-form-guest" id="postas-guest" title="Tamu">
+					<span></span>
+				</a>
+			</li>
+			<li>
+				<a href="https://sisopkitakita.wordpress.com/2014/09/26/contoh-monitor-dan-implementasi-mutual-exclusion-dengan-semaphore/#comment-form-load-service:WordPress.com" id="postas-wordpress" title="WordPress.com">
+					<span></span>
+				</a>
+			</li>
+			<li>
+				<a href="https://sisopkitakita.wordpress.com/2014/09/26/contoh-monitor-dan-implementasi-mutual-exclusion-dengan-semaphore/#comment-form-load-service:Twitter" id="postas-twitter" title="Twitter">
+					<span></span>
+				</a>
+			</li>
+			<li>
+				<a href="https://sisopkitakita.wordpress.com/2014/09/26/contoh-monitor-dan-implementasi-mutual-exclusion-dengan-semaphore/#comment-form-load-service:Facebook" id="postas-facebook" title="Facebook">
+					<span></span>
+				</a>
+			</li>
+			<li>
+			<iframe id="googleplus-sign-in" name="googleplus-sign-in" src="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/saved_resource(14).html" width="24" height="24" scrolling="no" allowtransparency="true" seamless="seamless" frameborder="0"></iframe>
+			</li>
+		</ul>
+	</div>
+
+	<div id="comment-form-guest" class="comment-form-service selected">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+<a href="https://gravatar.com/site/signup/" target="_blank">				<img src="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/ad516503a11cd5ca435acc9bb6523536" alt="Gravatar" width="25" class="no-grav">
+</a>			</div>
+
+				<div class="comment-form-fields">
+				<div class="comment-form-field comment-form-email">
+					<label for="email">Surel <span class="required">(wajib)</span> <span class="nopublish">(Alamat takkan pernah dipublikasikan)</span></label>
+					<div class="comment-form-input"><input id="email" name="email" type="email" value=""></div>
+				</div>
+				<div class="comment-form-field comment-form-author">
+					<label for="author">Nama <span class="required">(wajib)</span></label>
+					<div class="comment-form-input"><input id="author" name="author" type="text" value=""></div>
+				</div>
+				<div class="comment-form-field comment-form-url">
+					<label for="url">Situs Web</label>
+					<div class="comment-form-input"><input id="url" name="url" type="url" value=""></div>
+				</div>
+			</div>
+	
+		</div>
+	</div>
+
+	<div id="comment-form-wordpress" class="comment-form-service">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+				<img src="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/ad516503a11cd5ca435acc9bb6523536" alt="Logo WordPress.com" width="25" class="no-grav">
+			</div>
+
+				<div class="comment-form-fields">
+				<input type="hidden" name="wp_avatar" id="wordpress-avatar" class="comment-meta-wordpress" value="">
+				<input type="hidden" name="wp_user_id" id="wordpress-user_id" class="comment-meta-wordpress" value="">
+				<input type="hidden" name="wp_access_token" id="wordpress-access_token" class="comment-meta-wordpress" value="">
+				<p class="comment-form-posting-as pa-wordpress"><strong></strong> You are commenting using your <span class="skimlinks-unlinked">WordPress.com</span> account. <span class="comment-form-log-out">(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( &#39;wordpress&#39; );">Logout</a>&nbsp;/&nbsp;<a href="https://sisopkitakita.wordpress.com/2014/09/26/contoh-monitor-dan-implementasi-mutual-exclusion-dengan-semaphore/#" onclick="javascript:HighlanderComments.switchAccount();return false;">Ubah</a>&nbsp;)</span></p>
+			</div>
+	
+		</div>
+	</div>
+
+	<div id="comment-form-twitter" class="comment-form-service">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+				<img src="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/ad516503a11cd5ca435acc9bb6523536" alt="Gambar Twitter" width="25" class="no-grav">
+			</div>
+
+				<div class="comment-form-fields">
+				<input type="hidden" name="twitter_avatar" id="twitter-avatar" class="comment-meta-twitter" value="">
+				<input type="hidden" name="twitter_user_id" id="twitter-user_id" class="comment-meta-twitter" value="">
+				<input type="hidden" name="twitter_access_token" id="twitter-access_token" class="comment-meta-twitter" value="">
+				<p class="comment-form-posting-as pa-twitter"><strong></strong> You are commenting using your Twitter account. <span class="comment-form-log-out">(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( &#39;twitter&#39; );">Logout</a>&nbsp;/&nbsp;<a href="https://sisopkitakita.wordpress.com/2014/09/26/contoh-monitor-dan-implementasi-mutual-exclusion-dengan-semaphore/#" onclick="javascript:HighlanderComments.switchAccount();return false;">Ubah</a>&nbsp;)</span></p>
+			</div>
+	
+		</div>
+	</div>
+
+	<div id="comment-form-facebook" class="comment-form-service">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+				<img src="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/ad516503a11cd5ca435acc9bb6523536" alt="Foto Facebook" width="25" class="no-grav">
+			</div>
+
+				<div class="comment-form-fields">
+				<input type="hidden" name="fb_avatar" id="facebook-avatar" class="comment-meta-facebook" value="">
+				<input type="hidden" name="fb_user_id" id="facebook-user_id" class="comment-meta-facebook" value="">
+				<input type="hidden" name="fb_access_token" id="facebook-access_token" class="comment-meta-facebook" value="">
+				<p class="comment-form-posting-as pa-facebook"><strong></strong> You are commenting using your Facebook account. <span class="comment-form-log-out">(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( &#39;facebook&#39; );">Logout</a>&nbsp;/&nbsp;<a href="https://sisopkitakita.wordpress.com/2014/09/26/contoh-monitor-dan-implementasi-mutual-exclusion-dengan-semaphore/#" onclick="javascript:HighlanderComments.switchAccount();return false;">Ubah</a>&nbsp;)</span></p>
+			</div>
+	
+		</div>
+	</div>
+
+	<div id="comment-form-googleplus" class="comment-form-service">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+				<img src="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/ad516503a11cd5ca435acc9bb6523536" alt="Foto Google+" width="25" class="no-grav">
+			</div>
+
+				<div class="comment-form-fields">
+				<input type="hidden" name="googleplus_avatar" id="googleplus-avatar" class="comment-meta-googleplus" value="">
+				<input type="hidden" name="googleplus_user_id" id="googleplus-user_id" class="comment-meta-googleplus" value="">
+				<input type="hidden" name="googleplus_access_token" id="googleplus-access_token" class="comment-meta-googleplus" value="">
+				<p class="comment-form-posting-as pa-googleplus"><strong></strong> You are commenting using your Google+ account. <span class="comment-form-log-out">(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( &#39;googleplus&#39; );">Logout</a>&nbsp;/&nbsp;<a href="https://sisopkitakita.wordpress.com/2014/09/26/contoh-monitor-dan-implementasi-mutual-exclusion-dengan-semaphore/#" onclick="javascript:HighlanderComments.switchAccount();return false;">Ubah</a>&nbsp;)</span></p>
+			</div>
+	
+		</div>
+	</div>
+
+
+	<div id="comment-form-load-service" class="comment-form-service">
+		<div class="comment-form-posting-as-cancel"><a href="javascript:HighlanderComments.cancelExternalWindow();">Batal</a></div>
+		<p>Connecting to %s</p>
+	</div>
+
+</div>
+
+<script type="text/javascript">
+var highlander_expando_javascript = function(){
+	var input = document.createElement( 'input' ),
+	    comment = jQuery( '#comment' );
+
+	if ( 'placeholder' in input ) {
+		comment.attr( 'placeholder', jQuery( '.comment-textarea label' ).remove().text() );
+	}
+
+	// Expando Mode: start small, then auto-resize on first click + text length
+	jQuery( '#comment-form-identity' ).hide();
+	jQuery( '#comment-form-subscribe' ).hide();
+	jQuery( '#commentform .form-submit' ).hide();
+
+	comment.css( { 'height':'10px' } ).one( 'focus', function() {
+		var timer = setInterval( HighlanderComments.resizeCallback, 10 )
+		jQuery( this ).animate( { 'height': HighlanderComments.initialHeight } ).delay( 100 ).queue( function(n) { clearInterval( timer ); HighlanderComments.resizeCallback(); n(); } );
+		jQuery( '#comment-form-identity' ).slideDown();
+		jQuery( '#comment-form-subscribe' ).slideDown();
+		jQuery( '#commentform .form-submit' ).slideDown();
+	});
+}
+jQuery(document).ready( highlander_expando_javascript );
+</script>
+
+<div id="comment-form-subscribe" style="display: none;">
+	<p class="comment-subscription-form"><input type="checkbox" name="subscribe" id="subscribe" value="subscribe" style="width: auto;"> <label class="subscribe-label" id="subscribe-label" for="subscribe" style="display: inline;">Beri tahu saya komentar baru melalui email.</label></p></div>
+
+
+
+
+<p class="form-submit" style="display: none;"><input name="submit" type="submit" id="comment-submit" class="submit" value="Kirim Komentar"> <input type="hidden" name="comment_post_ID" value="59" id="comment_post_ID">
+<input type="hidden" name="comment_parent" id="comment_parent" value="0">
+</p><p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="3358484372"></p>
+<input type="hidden" name="genseq" value="1489053730">
+<p style="display: none;"></p>			<input type="hidden" id="ak_js" name="ak_js" value="1489054028670"></form>
+			</div><!-- #respond -->
+	<div style="clear: both"></div>
+</div><!-- #comments -->
+
+		
+		</main><!-- #main -->
+	</div><!-- #primary -->
+
+
+	</div><!-- #content -->
+	<footer id="colophon" class="site-footer" role="contentinfo">
+		<div class="site-info">
+						<a href="https://wordpress.com/?ref=footer_blog">Blog di WordPress.com.</a>
+			
+					</div><!-- .site-info -->
+	</footer><!-- #colophon -->
+</div><!-- #page -->
+<!--  -->
+<script type="text/javascript" src="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/gprofiles.js.download"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var WPGroHo = {"my_hash":""};
+/* ]]> */
+</script>
+<script type="text/javascript" src="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/wpgroho.js.download"></script>
+
+	<script>
+		//initialize and attach hovercards to all gravatars
+		jQuery( document ).ready( function( $ ) {
+
+			if (typeof Gravatar === "undefined"){
+				return;
+			}
+
+			if ( typeof Gravatar.init !== "function" ) {
+				return;
+			}			
+
+			Gravatar.profile_cb = function( hash, id ) {
+				WPGroHo.syncProfileData( hash, id );
+			};
+			Gravatar.my_hash = WPGroHo.my_hash;
+			Gravatar.init( 'body', '#wp-admin-bar-my-account' );
+		});
+	</script>
+
+		<div style="display:none">
+	</div>
+<script type="text/javascript">
+/* <![CDATA[ */
+var HighlanderComments = {"loggingInText":"Logging In\u2026","submittingText":"Memposkan Komentar\u2026","postCommentText":"Kirim Komentar","connectingToText":"Connecting to %s","commentingAsText":"%1$s: You are commenting using your %2$s account.","logoutText":"Log Keluar","loginText":"Log Masuk","connectURL":"https:\/\/sisopkitakita.wordpress.com\/public.api\/connect\/?action=request","logoutURL":"https:\/\/sisopkitakita.wordpress.com\/wp-login.php?action=logout&_wpnonce=d8bdbda5ee","homeURL":"https:\/\/sisopkitakita.wordpress.com\/","postID":"59","gravDefault":"identicon","enterACommentError":"Silakan masukkan komentar","enterEmailError":"Masukkan alamat email di sini","invalidEmailError":"Alamat email tidak valid","enterAuthorError":"Masukkan nama Anda di sini","gravatarFromEmail":"Gambar ini akan tampil ketika Anda memberi komentar. Klik untuk mengubahnya.","logInToExternalAccount":"Log in untuk memakai data dari salah satu akun ini.","change":"Ubah","changeAccount":"Ubah Akun","comment_registration":"0","userIsLoggedIn":"","isJetpack":"0","text_direction":"ltr"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/saved_resource(6)"></script>
+
+	<script type="text/javascript">
+		window.WPCOM_sharing_counts = {"https:\/\/sisopkitakita.wordpress.com\/2014\/09\/26\/contoh-monitor-dan-implementasi-mutual-exclusion-dengan-semaphore\/":59};
+	</script>
+		<script type="text/javascript">
+			var windowOpen;
+		jQuery(document).on( 'ready post-load', function(){
+			jQuery( 'a.share-twitter' ).on( 'click', function() {
+				if ( 'undefined' !== typeof windowOpen ){ // If there's another sharing window open, close it.
+					windowOpen.close();
+				}
+				windowOpen = window.open( jQuery(this).attr( 'href' ), 'wpcomtwitter', 'menubar=1,resizable=1,width=600,height=350' );
+				return false;
+			});
+		});
+		</script>
+				<script type="text/javascript">
+			var windowOpen;
+		jQuery(document).on( 'ready post-load', function(){
+			jQuery( 'a.share-facebook' ).on( 'click', function() {
+				if ( 'undefined' !== typeof windowOpen ){ // If there's another sharing window open, close it.
+					windowOpen.close();
+				}
+				windowOpen = window.open( jQuery(this).attr( 'href' ), 'wpcomfacebook', 'menubar=1,resizable=1,width=600,height=400' );
+				return false;
+			});
+		});
+		</script>
+				<script type="text/javascript">
+			var windowOpen;
+		jQuery(document).on( 'ready post-load', function(){
+			jQuery( 'a.share-google-plus-1' ).on( 'click', function() {
+				if ( 'undefined' !== typeof windowOpen ){ // If there's another sharing window open, close it.
+					windowOpen.close();
+				}
+				windowOpen = window.open( jQuery(this).attr( 'href' ), 'wpcomgoogle-plus-1', 'menubar=1,resizable=1,width=480,height=550' );
+				return false;
+			});
+		});
+		</script>
+		<script type="text/javascript" src="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/form.js.download"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var comment_like_text = {"loading":"Memuat..."};
+/* ]]> */
+</script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var actionbardata = {"siteID":"73943865","siteName":"Materi Sistem Operasi","siteURL":"http:\/\/sisopkitakita.wordpress.com","icon":"<img alt='' src='https:\/\/s1.wp.com\/i\/logo\/wpcom-gray-white.png' class='avatar avatar-50' height='50' width='50' \/>","canManageOptions":"","canCustomizeSite":"","isFollowing":"","themeSlug":"pub\/hexa","signupURL":"https:\/\/wordpress.com\/start\/","loginURL":"https:\/\/sisopkitakita.wordpress.com\/wp-login.php?redirect_to=https%3A%2F%2Fsisopkitakita.wordpress.com%2F2014%2F09%2F26%2Fcontoh-monitor-dan-implementasi-mutual-exclusion-dengan-semaphore%2F","themeURL":"https:\/\/wordpress.com\/themes\/hexa\/","xhrURL":"https:\/\/sisopkitakita.wordpress.com\/wp-admin\/admin-ajax.php","nonce":"ec6d3c1b84","isSingular":"1","isFolded":"","isLoggedIn":"","isMobile":"","subscribeNonce":"<input type=\"hidden\" id=\"_wpnonce\" name=\"_wpnonce\" value=\"74cede897d\" \/>","referer":"https:\/\/sisopkitakita.wordpress.com\/2014\/09\/26\/contoh-monitor-dan-implementasi-mutual-exclusion-dengan-semaphore\/","canFollow":"1","statusMessage":"","customizeLink":"https:\/\/sisopkitakita.wordpress.com\/wp-admin\/customize.php?url=https%3A%2F%2Fsisopkitakita.wordpress.com%2F2014%2F09%2F26%2Fcontoh-monitor-dan-implementasi-mutual-exclusion-dengan-semaphore%2F","postID":"59","shortlink":"http:\/\/wp.me\/p50gaZ-X","canEditPost":"","editLink":"https:\/\/wordpress.com\/post\/sisopkitakita.wordpress.com\/59","statsLink":"https:\/\/wordpress.com\/stats\/post\/59\/sisopkitakita.wordpress.com","i18n":{"view":"Lihat Situs","follow":"Ikuti","following":"Mengikuti","edit":"Sunting","login":"Masuk","signup":"Mendaftar","customize":"Sesuaikan","report":"Laporkan isi ini","themeInfo":"Dapatkan tema: Hexa","shortlink":"Salin shortlink","copied":"Tersalin","followedText":"Pos baru dari situs ini sekarang akan ditampilkan di <a href=\"https:\/\/wordpress.com\/\">Pembaca<\/a> Anda","foldBar":"Ciutkan bilah ini","unfoldBar":"Perluas bilah ini","editSubs":"Kelola langganan","viewReader":"Lihat situs dalam Pembaca","subscribe":"Daftarkan saya","enterEmail":"Masukkan alamat email Anda","followers":"","alreadyUser":"Sudah punya akun WordPress.com? <a href=\"https:\/\/sisopkitakita.wordpress.com\/wp-login.php?redirect_to=https%3A%2F%2Fsisopkitakita.wordpress.com%2F2014%2F09%2F26%2Fcontoh-monitor-dan-implementasi-mutual-exclusion-dengan-semaphore%2F\">Login sekarang.<\/a>","stats":"Statistik"}};
+/* ]]> */
+</script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var sharing_js_options = {"lang":"en","counts":"1"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/saved_resource(7)"></script><div id="actionbar" class="actnbr-pub-hexa actnbr-has-follow"><ul><li class="actnbr-btn actnbr-hidden"> 			    	<a class="actnbr-action actnbr-actn-follow" href="https://sisopkitakita.wordpress.com/2014/09/26/contoh-monitor-dan-implementasi-mutual-exclusion-dengan-semaphore/"><svg class="gridicon gridicon__follow" height="24px" width="24px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M23 16v2h-3v3h-2v-3h-3v-2h3v-3h2v3h3zM20 2v9h-4v3h-3v4H4c-1.1 0-2-.9-2-2V2h18zM8 13v-1H4v1h4zm3-3H4v1h7v-1zm0-2H4v1h7V8zm7-4H4v2h14V4z"></path></g></svg><span>Ikuti</span></a> 			    	<div class="actnbr-popover tip tip-top-left actnbr-notice"> 			    		<div class="tip-arrow"></div> 			    		<div class="tip-inner actnbr-follow-bubble"></div> 			    	</div> 			    </li><li class="actnbr-ellipsis actnbr-hidden"> 			  <svg class="gridicon gridicon__ellipsis" height="24" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><circle cx="5" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle><circle cx="12" cy="12" r="2"></circle></g></svg> 			  <div class="actnbr-popover tip tip-top-left actnbr-more"> 			  	<div class="tip-arrow"></div> 			  	<div class="tip-inner"> 				  <ul> 				    <li class="actnbr-sitename actnbr-hidden"><a href="http://sisopkitakita.wordpress.com/"><img alt="" src="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/wpcom-gray-white.png" class="avatar avatar-50" height="50" width="50"> Materi Sistem Operasi</a></li> 				   	<li class="actnbr-folded-customize actnbr-hidden"><a href="https://sisopkitakita.wordpress.com/wp-admin/customize.php?url=https%3A%2F%2Fsisopkitakita.wordpress.com%2F2014%2F09%2F26%2Fcontoh-monitor-dan-implementasi-mutual-exclusion-dengan-semaphore%2F"><svg class="gridicon gridicon__customize" height="20px" width="20px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M2 6c0-1.505.78-3.08 2-4 0 .845.69 2 2 2 1.657 0 3 1.343 3 3 0 .386-.08.752-.212 1.09.74.594 1.476 1.19 2.19 1.81L8.9 11.98c-.62-.716-1.214-1.454-1.807-2.192C6.753 9.92 6.387 10 6 10c-2.21 0-4-1.79-4-4zm12.152 6.848l1.34-1.34c.607.304 1.283.492 2.008.492 2.485 0 4.5-2.015 4.5-4.5 0-.725-.188-1.4-.493-2.007L18 9l-2-2 3.507-3.507C18.9 3.188 18.225 3 17.5 3 15.015 3 13 5.015 13 7.5c0 .725.188 1.4.493 2.007L3 20l2 2 6.848-6.848c1.885 1.928 3.874 3.753 5.977 5.45l1.425 1.148 1.5-1.5-1.15-1.425c-1.695-2.103-3.52-4.092-5.448-5.977z" data-reactid=".2.1.1:0.1b.0"></path></g></svg><span>Sesuaikan<span></span></span></a></li> 				    <li class="actnbr-folded-follow actnbr-hidden"><a class="actnbr-action actnbr-actn-follow" href="https://sisopkitakita.wordpress.com/2014/09/26/contoh-monitor-dan-implementasi-mutual-exclusion-dengan-semaphore/"><svg class="gridicon gridicon__follow" height="24px" width="24px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M23 16v2h-3v3h-2v-3h-3v-2h3v-3h2v3h3zM20 2v9h-4v3h-3v4H4c-1.1 0-2-.9-2-2V2h18zM8 13v-1H4v1h4zm3-3H4v1h7v-1zm0-2H4v1h7V8zm7-4H4v2h14V4z"></path></g></svg><span>Ikuti</span></a></li> 						<li class="actnbr-signup actnbr-hidden"><a href="https://wordpress.com/start/">Mendaftar</a></li> 				    <li class="actnbr-login actnbr-hidden"><a href="https://sisopkitakita.wordpress.com/wp-login.php?redirect_to=https%3A%2F%2Fsisopkitakita.wordpress.com%2F2014%2F09%2F26%2Fcontoh-monitor-dan-implementasi-mutual-exclusion-dengan-semaphore%2F">Masuk</a></li> 				     				    <li class="actnbr-shortlink actnbr-hidden"><a href="http://wp.me/p50gaZ-X">Salin shortlink</a></li> 				    <li class="flb-report actnbr-hidden"><a href="http://en.wordpress.com/abuse/">Laporkan isi ini</a></li> 				     				     				    <li class="actnbr-subs actnbr-hidden"><a href="https://subscribe.wordpress.com/">Kelola langganan</a></li> 				    <li class="actnbr-fold actnbr-hidden"><a href="https://sisopkitakita.wordpress.com/2014/09/26/contoh-monitor-dan-implementasi-mutual-exclusion-dengan-semaphore/">Ciutkan bilah ini</a></li> 			      </ul> 			    </div> 		      </div> 		    </li> 	      </ul></div>
+<script type="text/javascript">
+// <![CDATA[
+(function() {
+try{
+  if ( window.external &&'msIsSiteMode' in window.external) {
+    if (window.external.msIsSiteMode()) {
+      var jl = document.createElement('script');
+      jl.type='text/javascript';
+      jl.async=true;
+      jl.src='/wp-content/plugins/ie-sitemode/custom-jumplist.php';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(jl, s);
+    }
+  }
+}catch(e){}
+})();
+// ]]>
+</script>	<script type="text/javascript">
+	var skimlinks_pub_id = "725X584219"
+	var skimlinks_sitename = "sisopkitakita.wordpress.com";
+	</script>
+	<script type="text/javascript" defer="" src="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/725X1342.skimlinks.js.download"></script>		<iframe src="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/master.html" scrolling="no" id="likes-master" name="likes-master" style="display:none;"></iframe>
+		<div id="likes-other-gravatars"><div class="likes-text"><span>%d</span> blogger menyukai ini:</div><ul class="wpl-avatars sd-like-gravatars"></ul></div>
+		<script>
+			var _comscore = _comscore || [];
+			_comscore.push({
+				c1: "2",
+				c2: "7518284"
+			});
+			(function() {
+				var s = document.createElement("script"),
+					el = document.getElementsByTagName("script")[0];
+				s.defer = true;
+				s.src = (document.location.protocol == "https:" ? "https://sb" : "http://b") + ".scorecardresearch.com/beacon.js";
+				el.parentNode.insertBefore(s, el);
+			})();
+		</script>
+		<noscript>
+			&lt;p class="robots-nocontent"&gt;&lt;img src="https://sb.scorecardresearch.com/p?c1=2&amp;c2=7518284&amp;c3=&amp;c4=&amp;c5=&amp;c6=&amp;c15=&amp;cv=2.0&amp;cj=1" alt="" style="display:none;" width="1" height="1" /&gt;&lt;/p&gt;
+		</noscript><script src="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/w.js.download" type="text/javascript" async="" defer=""></script>
+<script type="text/javascript">
+_tkq = window._tkq || [];
+_stq = window._stq || [];
+_tkq.push(['storeContext', {'blog_id':'73943865','blog_tz':'7','user_lang':'id','blog_lang':'id','user_id':'0'}]);
+_stq.push(['view', {'blog':'73943865','v':'wpcom','tz':'7','user_id':'0','post':'59','subd':'sisopkitakita'}]);
+_stq.push(['extra', {'crypt':'UE5XaGUuOTlwaD85flAmcm1mcmZsaDhkV11YdWFnNncxc1tjZG9XVXhRU08rYjIuSnFPfDktWXVabGN+aFdlfk0uJXxXc0dXfk9FbGxlSHZZV05YUCVdZUs5UnhFVDVNeEFpZ200Z2xkVXV0K2kzRWgtV09GY0dCU3E2Yj1PdHZNUEhxNTBjZGFvQ0pbfjh+eEswQiw5fj91Wn5bRGZTb2IuQkNBdVJyR0VyZktHZjU3X01kflVIZmg/RFtwVFV3TGhndUxNRUIlMERzLHlDSExTJVFzUkZuSXJpOU1YUTlDWnhITm0rW1lM'}]);
+_stq.push([ 'clickTrackerInit', '73943865', '59' ]);
+	</script>
+<noscript>&lt;img src="https://pixel.wp.com/b.gif?v=noscript" style="height:0px;width:0px;overflow:hidden" alt="" /&gt;</noscript>
+<script>
+if ( 'object' === typeof wpcom_mobile_user_agent_info ) {
+
+	wpcom_mobile_user_agent_info.init();
+	var mobileStatsQueryString = "";
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedPlatformName )
+		mobileStatsQueryString += "&x_" + 'mobile_platforms' + '=' + wpcom_mobile_user_agent_info.matchedPlatformName;
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedUserAgentName )
+		mobileStatsQueryString += "&x_" + 'mobile_devices' + '=' + wpcom_mobile_user_agent_info.matchedUserAgentName;
+	
+	if( wpcom_mobile_user_agent_info.isIPad() )
+		mobileStatsQueryString += "&x_" + 'ipad_views' + '=' + 'views';
+
+	if( "" != mobileStatsQueryString ) {
+		new Image().src = document.location.protocol + '//pixel.wp.com/g.gif?v=wpcom-no-pv' + mobileStatsQueryString + '&baba=' + Math.random();
+	}
+	
+}
+</script>
+
+
+<!--
+	generated 293 seconds ago
+	generated in 0.111 seconds
+	served from batcache in 0.001 seconds
+	expires in 7 seconds
+-->
+<div class="comment-likes-overlay" style="display: none;"></div><img src="./Monitor _ Mutual Exclusion dengan Semaphore _ Materi Sistem Operasi_files/g.gif" alt=":)" id="wpstats"></body></html>

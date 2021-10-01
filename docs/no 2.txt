@@ -1,0 +1,9 @@
+NO 2:
+
+manajemen disk itu antriannya di urutin mulai dari terkecil sampai terbesar.
+
+tapi prosesnya dimulai dari head status
+
+SSTF itu dari head status di cek ke kiri sama ke kanan itu deket mana.. klo deket ke kanan ya ke kanan klo deket ke kiri ya ke kiri gitu terus sampe semua selesai
+
+C-SCAN itu dari head status dia terus ke kanan sampe mentok baru balik ke awal lagi sampe semua selesai
